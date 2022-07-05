@@ -1,6 +1,10 @@
 <?php
 
+@date_default_timezone_set('Europe/Kiev');
+
 use Illuminate\Support\Facades\Route;
+
+use App\Http\Controllers\LinksController;
 
 /*
 |--------------------------------------------------------------------------
@@ -13,6 +17,7 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
-});
+//Route::get('/', function () { return view('index'); });
+Route::get('/',[LinksController::class, 'index']);
+Route::post('/',[LinksController::class, 'post']);
+

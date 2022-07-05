@@ -1,0 +1,13 @@
+BODY {
+	padding:0.5rem;
+}
+#formgrid {
+	display:inline-grid;
+	grid-template-rows:1fr 1fr 1fr 1fr;
+	grid-template-columns:1fr 1fr;
+	gap:0.5rem;
+}
+.field-label {
+	text-align:right;
+}
+
