@@ -7,9 +7,45 @@ use Illuminate\Support\Facades\DB;
 
 class LinksController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        return view('index');
+        if ('/'==$request->path()) {
+
+            return view('index');
+
+        } elseif (preg_match('/^[0-9A-Za-z]{8}$/',$request->path())) {
+
+            $links = DB::table('links')
+                ->where('shortlink', '=', $request->path())
+                ->get();
+            $sourceLink = $links[0]->sourcelink;
+            $counter = $links[0]->counter;
+            $lifeTime = $links[0]->lifetime;
+
+            if (sizeof($links)) {
+
+                if ($counter<0) {
+                    abort(404);
+                } elseif ($lifeTime<date('Y-m-d H:i:s')) {
+                    abort(404);
+                } else {
+                    if ($counter>0) {
+                        $counter=($counter>1)?--$counter:-1;
+                        DB::table('links')
+                            ->where('shortlink', '=', $request->path())
+                            ->update([ 'counter' => $counter ]);
+                    }
+                    header('Location: '.$sourceLink);
+                }
+                exit();
+
+            } else {
+                abort(404);
+            }
+
+        } else {
+            abort(404);
+        }
     }
 
     public function post(Request $request)
@@ -28,17 +64,17 @@ class LinksController extends Controller
             ->where('shortlink', '=', $shortLink)
             ->get();
 
-        $shortLink=env('APP_URL').'/'.$sourceLink;
+        $shortLink=$request->url().'/'.$sourceLink;
 
         if (sizeof($sourceLinks)) {
 
             DB::table('links')
                 ->where('sourcelink', $sourceLink)
                 ->update([
-                    'counter' => $counter,
-                    'lifetime' => $lifeTime
+                    'counter' => $counter
+//                    'lifetime' => $lifeTime
                 ]);
-            $shortLink=env('APP_URL').'/'.$sourceLinks[0]->shortlink;
+            $shortLink=$request->url().'/'.$sourceLinks[0]->shortlink;
 
             return view('post', [ 'result' => 'update', 'sourceLink' => $sourceLink, 'shortLink' => $shortLink ]);
 

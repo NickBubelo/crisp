@@ -17,7 +17,9 @@ use App\Http\Controllers\LinksController;
 |
 */
 
-//Route::get('/', function () { return view('index'); });
-Route::get('/',[LinksController::class, 'index']);
-Route::post('/',[LinksController::class, 'post']);
+Route::get( '/', [LinksController::class, 'index'] );
+Route::post( '/', [LinksController::class, 'post'] );
 
+if (preg_match('/^[0-9A-Za-z]{8}$/',Request::path())) {
+    Route::get( Request::path(), [LinksController::class, 'index'] );
+}
