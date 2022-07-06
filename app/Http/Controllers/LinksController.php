@@ -64,8 +64,6 @@ class LinksController extends Controller
             ->where('shortlink', '=', $shortLink)
             ->get();
 
-        $shortLink=$request->url().'/'.$sourceLink;
-
         if (sizeof($sourceLinks)) {
 
             DB::table('links')
@@ -80,6 +78,8 @@ class LinksController extends Controller
 
         } elseif (sizeof($shortLinks)) {
 
+            $shortLink=$request->url().'/'.$shortLink;
+
             return view('post', [ 'result' => 'collision', 'sourceLink' => $sourceLink, 'shortLink' => $shortLink, 'sourceLinkForm' => $sourceLink ]);
 
         } else {
@@ -91,6 +91,8 @@ class LinksController extends Controller
                     'counter' => $counter,
                     'lifetime' => $lifeTime
                 ]);
+
+            $shortLink=$request->url().'/'.$shortLink;
 
             return view('post', ['result' => 'insert', 'sourceLink' => $sourceLink, 'shortLink' => $shortLink ]);
 
