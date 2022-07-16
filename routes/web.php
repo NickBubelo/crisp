@@ -4,6 +4,8 @@
 
 use Illuminate\Support\Facades\Route;
 
+use App\Models\Links;
+
 use App\Http\Controllers\LinksController;
 
 /*
@@ -17,9 +19,9 @@ use App\Http\Controllers\LinksController;
 |
 */
 
-Route::get( '/', [LinksController::class, 'index'] );
+Route::view( '/', 'index' );
 Route::post( '/', [LinksController::class, 'post'] );
 
 if (preg_match('/^[0-9A-Za-z]{8}$/',Request::path())) {
-    Route::get( Request::path(), [LinksController::class, 'index'] );
+    Route::get( '/{links:shortlink}', [LinksController::class, 'link'] );
 }

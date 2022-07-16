@@ -3,116 +3,48 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
+//use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
+
+use App\Models\Links;
 
 class LinksController extends Controller
 {
-    public function index(Request $request)
+    
+    public function link(Links $links)
     {
-        if ('/'==$request->path()) {
-
-            return view('index');
-
-        } elseif (preg_match('/^[0-9A-Za-z]{8}$/',$request->path())) {
-
-            $links = DB::table('links')
-                ->where('shortlink', '=', $request->path())
-                ->get();
-            $sourceLink = $links[0]->sourcelink;
-            $counter = $links[0]->counter;
-            $lifeTime = $links[0]->lifetime;
-
-            if (sizeof($links)) {
-
-                if ($counter<0) {
-                    abort(404);
-                } elseif ($lifeTime<date('Y-m-d H:i:s')) {
-                    abort(404);
-                } else {
-                    if ($counter>0) {
-                        $counter=($counter>1)?--$counter:-1;
-                        DB::table('links')
-                            ->where('shortlink', '=', $request->path())
-                            ->update([ 'counter' => $counter ]);
-                    }
-                    header('Location: '.$sourceLink);
-                }
-                exit();
-
-            } else {
-                abort(404);
-            }
-
-        } else {
+        if ($links->counter<0) {
             abort(404);
+        } elseif ($links->lifetime<date('Y-m-d H:i:s')) {
+            abort(404);
+        } else {
+            if ($links->counter>0) {
+                $links->decrementCounter();
+            }
+            header('Location: '.$links->sourcelink);
+            exit();
         }
     }
 
     public function post(Request $request)
     {
-        $sourceLink = $request->input('sourcelink');
-        $counter = $request->input('counter');
-        $lifeTime = $request->input('lifetime');
-        $lifeTime=date('Y-m-d H:i:s',time()+$lifeTime*3600);
-        $shortLink = $this->getShortLink();
+        $links = new Links();
 
-        $sourceLinks = DB::table('links')
-            ->where('sourcelink', '=', $sourceLink)
-            ->get();
+        $links->sourcelink = $request->input('sourcelink');
+        $links->counter = $request->input('counter');
+        $links->lifetime = $request->input('lifetime');
+        $links->lifetime = date('y-m-d h:i:s',time()+$links->lifetime*3600);
+        $links->shortlink = Str::random(8);
 
-        $shortLinks = DB::table('links')
-            ->where('shortlink', '=', $shortLink)
-            ->get();
-
-        if (sizeof($sourceLinks)) {
-
-            DB::table('links')
-                ->where('sourcelink', $sourceLink)
-                ->update([
-                    'counter' => $counter
-//                    'lifetime' => $lifeTime
-                ]);
-            $shortLink=$request->url().'/'.$sourceLinks[0]->shortlink;
-
-            return view('post', [ 'result' => 'update', 'sourceLink' => $sourceLink, 'shortLink' => $shortLink ]);
-
-        } elseif (sizeof($shortLinks)) {
-
-            $shortLink=$request->url().'/'.$shortLink;
-
-            return view('post', [ 'result' => 'collision', 'sourceLink' => $sourceLink, 'shortLink' => $shortLink, 'sourceLinkForm' => $sourceLink ]);
-
+        if ($links->isUpdated()) {
+            return view('post', [ 'result' => 'update', 'sourcelink' => $links->sourcelink, 'shortlink' => $request->url().'/'.$links->shortlink ]);
+        } elseif ($links->isCollision()) {
+            return view('post', [ 'result' => 'collision', 'sourcelink' => $links->sourcelink, 'shortlink' => $request->url().'/'.$links->shortlink, 'sourceLinkForm' => $links->sourcelink ]);
+        } elseif ($links->isInserted()) {
+            return view('post', [ 'result' => 'insert', 'sourcelink' => $links->sourcelink, 'shortlink' => $request->url().'/'.$links->shortlink ]);
         } else {
-
-            DB::table('links')
-                ->insert([
-                    'sourcelink' => $sourceLink,
-                    'shortlink' => $shortLink,
-                    'counter' => $counter,
-                    'lifetime' => $lifeTime
-                ]);
-
-            $shortLink=$request->url().'/'.$shortLink;
-
-            return view('post', ['result' => 'insert', 'sourceLink' => $sourceLink, 'shortLink' => $shortLink ]);
-
+            return view('index', [ 'sourceLinkForm' => $links->sourcelink ]);
         }
-            
-    }
-
-    private function getShortLink()
-    {
-        $short='';
-        for ($i=0; $i<8; ++$i) {
-            if (rand(0,1))
-                $ch=chr(rand(0x30,0x39));
-            elseif (rand(0,1))
-                $ch=chr(rand(0x41,0x5a));
-            else
-                $ch=chr(rand(0x61,0x7a));
-            $short.=$ch;
-        }
-        return $short;
     }
 
 }

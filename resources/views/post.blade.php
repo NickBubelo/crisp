@@ -11,16 +11,16 @@
 
 @switch($result)
     @case('update')
-		<p>Ссылка <a href='{{ $sourceLink }}' target='_blank'>{{ $sourceLink }}</a> уже есть в базе данных.</p>
-		<p>Короткая ссылка для нее: <a href='{{ $shortLink }}' target='_blank'>{{ $shortLink }}</a></p>
+		<p>Ссылка <a href='{{ $sourcelink }}' target='_blank'>{{ $sourcelink }}</a> уже есть в базе данных.</p>
+		<p>Короткая ссылка для нее: <a href='{{ $shortlink }}' target='_blank'>{{ $shortlink }}</a></p>
         @break
     @case('collision')
-		<p>Ссылка <a href='{{ $sourceLink }}' target='_blank'>{{ $sourceLink }}</a> вызвала коллизию (неуникальность короткой ссылки).</p>
+		<p>Ссылка <a href='{{ $sourcelink }}' target='_blank'>{{ $sourcelink }}</a> вызвала коллизию (неуникальность короткой ссылки).</p>
 		<p>Попробуйте отправить форму еще раз.</p>
         @break
     @case('insert')
-		<p>Ссылка <a href='{{ $sourceLink }}' target='_blank'>{{ $sourceLink }}</a> внесена в базу данных.</p>
-		<p>Короткая ссылка для нее: <a href='{{ $shortLink }}' target='_blank'>{{ $shortLink }}</a></p>
+		<p>Ссылка <a href='{{ $sourcelink }}' target='_blank'>{{ $sourcelink }}</a> внесена в базу данных.</p>
+		<p>Короткая ссылка для нее: <a href='{{ $shortlink }}' target='_blank'>{{ $shortlink }}</a></p>
         @break
 @endswitch
 
