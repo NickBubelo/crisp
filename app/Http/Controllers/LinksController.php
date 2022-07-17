@@ -33,7 +33,7 @@ class LinksController extends Controller
         $links->sourcelink = $request->input('sourcelink');
         $links->counter = $request->input('counter');
         $links->lifetime = $request->input('lifetime');
-        $links->lifetime = date('y-m-d h:i:s',time()+$links->lifetime*3600);
+        $links->lifetime = date('Y-m-d H:i:s',time()+$links->lifetime*3600);
         $links->shortlink = Str::random(8);
 
         if ($links->isUpdated()) {
