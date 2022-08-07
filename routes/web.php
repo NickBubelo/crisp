@@ -19,7 +19,7 @@ use App\Http\Controllers\LinksController;
 |
 */
 
-Route::view( '/', 'index' );
+Route::view( '/', 'index', [ 'url'=>Request::url(), 'links'=>Links::all() ] );
 Route::post( '/', [LinksController::class, 'post'] );
 
 if (preg_match('/^[0-9A-Za-z]{8}$/',Request::path())) {

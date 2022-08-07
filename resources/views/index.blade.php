@@ -11,5 +11,12 @@
 
 @include ('form')
 
+<p>Все короткие ссылки:</p>
+<ul>
+@foreach ($links as $link)
+	<li><a href='{{ $url }}/{{ $link->shortlink }}' target='_blank'>{{ $url }}/{{ $link->shortlink }}</a></li>
+@endforeach
+</ul>
+
 </body>
 </html>
