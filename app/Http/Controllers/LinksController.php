@@ -21,8 +21,7 @@ class LinksController extends Controller
             if ($links->counter>0) {
                 $links->decrementCounter();
             }
-            header('Location: '.$links->sourcelink);
-            exit();
+              return redirect($links->sourcelink);
         }
     }
 
