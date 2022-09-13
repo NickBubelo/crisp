@@ -25,3 +25,5 @@ Route::post( '/', [LinksController::class, 'post'] );
 if (preg_match('/^[0-9A-Za-z]{8}$/',Request::path())) {
     Route::get( '/{links:shortlink}', [LinksController::class, 'link'] );
 }
+
+Route::view( '/welcome','welcome' );

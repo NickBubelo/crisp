@@ -14,7 +14,7 @@
 <p>Все короткие ссылки:</p>
 <ul>
 @foreach ($links as $link)
-	<li><a href='{{ $url }}/{{ $link->shortlink }}' target='_blank'>{{ $url }}/{{ $link->shortlink }}</a></li>
+	<li><a href='{{ $url }}/{{ $link->shortlink }}' target='_blank'>{{ $url }}/{{ $link->shortlink }}</a> <!-- counter: {{ $link->counter }}, lifetaime: {{ $link->lifetime }} --> </li>
 @endforeach
 </ul>
 

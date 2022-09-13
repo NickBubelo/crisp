@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use Carbon\Carbon;
+
 use Illuminate\Http\Request;
 //use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
@@ -15,13 +17,13 @@ class LinksController extends Controller
     {
         if ($links->counter<0) {
             abort(404);
-        } elseif ($links->lifetime<date('Y-m-d H:i:s')) {
+        } elseif ($links->lifetime < Carbon::now()->format('Y-m-d H:i:s')) {
             abort(404);
         } else {
             if ($links->counter>0) {
                 $links->decrementCounter();
             }
-              return redirect($links->sourcelink);
+            return redirect($links->sourcelink);
         }
     }
 
@@ -30,9 +32,9 @@ class LinksController extends Controller
         $links = new Links();
 
         $links->sourcelink = $request->input('sourcelink');
-        $links->counter = $request->input('counter');
-        $links->lifetime = $request->input('lifetime');
-        $links->lifetime = date('Y-m-d H:i:s',time()+$links->lifetime*3600);
+        $links->counter = (int)$request->input('counter');
+        $lifetime = Carbon::now()->addHours((int)$request->input('lifetime'));
+        $links->lifetime = $lifetime->format('Y-m-d H:i:s');
         $links->shortlink = Str::random(8);
 
         if ($links->isUpdated()) {
